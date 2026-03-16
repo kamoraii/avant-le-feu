@@ -163,28 +163,6 @@ opacity:1;
 audio{
 display:none;
 }
-/* Message de débogage (gardé pour confirmation) */
-#fadeMessage {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.8);
-  color: white;
-  font-size: 3rem;
-  font-weight: bold;
-  padding: 20px 40px;
-  border-radius: 20px;
-  z-index: 200;
-  opacity: 0;
-  transition: opacity 0.5s;
-  pointer-events: none;
-  text-align: center;
-  border: 2px solid yellow;
-}
-#fadeMessage.visible {
-  opacity: 1;
-}
 </style>
 </head>
 <body>
@@ -195,7 +173,6 @@ display:none;
 
 <button class="invitation" id="invitation">my world</button>
 
-<!-- On garde la balise audio mais on ne l'utilise plus directement -->
 <audio id="introAudio" preload="auto" style="display:none">
 <source src="musique_intro.mp3" type="audio/mpeg">
 </audio>
@@ -223,20 +200,16 @@ display:none;
 
 <button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
 
-<!-- Message de débogage -->
-<div id="fadeMessage">FONDU EN COURS...</div>
-
 <script>
 const invitation = document.getElementById("invitation")
 const scene = document.getElementById("scene")
-const audioElement = document.getElementById("introAudio") // on le garde pour le chargement
+const audioElement = document.getElementById("introAudio") // conservé mais non utilisé
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
-const fadeMessage = document.getElementById("fadeMessage")
 
 const crawlDuration = 110
-const fadeStart = 36
-const fadeDuration = 12
+const fadeStart = 36           // seconde à laquelle le fondu commence
+const fadeDuration = 15         // durée du fondu (modifiable)
 
 let started = false
 let fadeStarted = false
@@ -245,19 +218,6 @@ let fadeStarted = false
 let audioContext = null
 let gainNode = null
 let source = null
-let audioBuffer = null
-
-// Charge le fichier audio via fetch et AudioContext
-async function loadAudio() {
-  try {
-    const response = await fetch('musique_intro.mp3')
-    const arrayBuffer = await response.arrayBuffer()
-    audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
-    console.log('Audio chargé avec succès')
-  } catch (e) {
-    console.error('Erreur chargement audio:', e)
-  }
-}
 
 function startExperience() {
   if (started) return
@@ -266,42 +226,37 @@ function startExperience() {
   invitation.style.display = "none"
   scene.classList.add("active")
 
-  // Animation du crawl
+  // Animation du texte
   crawl.style.animation = "none"
   crawl.offsetHeight
   crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
 
-  // Initialisation de l'API Web Audio (doit être créé après interaction)
+  // Initialisation de l'API Web Audio
   audioContext = new (window.AudioContext || window.webkitAudioContext)()
   
-  // Crée le noeud de gain (volume)
+  // Noeud de gain (volume)
   gainNode = audioContext.createGain()
-  gainNode.gain.value = 1 // volume max
+  gainNode.gain.value = 1
   gainNode.connect(audioContext.destination)
 
-  // Charge le fichier audio
+  // Chargement et lecture du fichier audio
   fetch('musique_intro.mp3')
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
     .then(buffer => {
-      audioBuffer = buffer
-      
-      // Crée la source et la connecte
       source = audioContext.createBufferSource()
-      source.buffer = audioBuffer
+      source.buffer = buffer
       source.connect(gainNode)
       
-      // Joue la musique
       source.start(0)
       
-      // Surveille l'avancement (on utilise setTimeout car on ne peut pas facilement suivre le temps avec Web Audio)
-      // On va plutôt utiliser un intervalle pour vérifier le temps écoulé
+      // Surveillance du temps écoulé
       const startTime = audioContext.currentTime
       checkTime(startTime)
     })
     .catch(e => console.error('Erreur lecture audio:', e))
 
-  // Le bouton "go on?" apparaît après la fin du fondu
+  // Apparition du bouton "go on?" après (fadeStart + fadeDuration) secondes
   setTimeout(() => {
     btn.classList.add("visible")
   }, (fadeStart + fadeDuration) * 1000)
@@ -313,13 +268,10 @@ function checkTime(startTime) {
     
     const elapsed = audioContext.currentTime - startTime
     
-    // Déclenche le fondu si on atteint fadeStart
+    // Déclenchement du fondu
     if (!fadeStarted && elapsed >= fadeStart) {
       fadeStarted = true
       clearInterval(checkInterval)
-      
-      // Affiche le message
-      fadeMessage.classList.add('visible')
       
       // Début du fondu
       const fadeStartTime = audioContext.currentTime
@@ -328,24 +280,22 @@ function checkTime(startTime) {
       function fadeLoop() {
         const now = audioContext.currentTime
         if (now >= targetTime) {
-          // Fin du fondu
+          // Fin du fondu : volume à 0 et arrêt
           gainNode.gain.value = 0
-          if (source) source.stop() // Arrête la source
-          fadeMessage.classList.remove('visible')
+          if (source) source.stop()
           return
         }
         
-        // Calcule la valeur du gain (décroissance linéaire)
+        // Calcul linéaire du gain (de 1 à 0)
         const progress = (now - fadeStartTime) / fadeDuration
         gainNode.gain.value = 1 - progress
         
-        // Continue la boucle
         requestAnimationFrame(fadeLoop)
       }
       
       requestAnimationFrame(fadeLoop)
     }
-  }, 100) // Vérifie toutes les 100ms
+  }, 100) // Vérification toutes les 100ms
 }
 
 invitation.addEventListener("click", startExperience)
