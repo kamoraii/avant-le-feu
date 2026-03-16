@@ -6,10 +6,13 @@
 <title>Dans l'ombre — my world</title>
 <link rel="icon" type="image/jpeg" href="icone.jpeg">
 <link rel="apple-touch-icon" href="icone.jpeg">
+
+<!-- Polices Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
 <style>
 /* Tous tes styles inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -137,7 +140,7 @@ position:fixed;
 top:45%;
 left:50%;
 transform:translate(-50%,-50%);
-font-family:'Playfair Display',serif;
+font-family:'Shadows Into Light', cursive;  /* Nouvelle police */
 background:transparent;
 border:none;
 color:#ffe9b8;
@@ -149,7 +152,7 @@ text-shadow:
 0 0 40px rgba(255,200,120,0.9),
 0 0 80px rgba(255,190,80,0.7);
 opacity:0;
-transition:opacity 4s;        /* modifié à 3 secondes */
+transition:opacity 4s;        /* Transition de 4 secondes */
 animation:shine 4s infinite;
 }
 @keyframes shine{
@@ -207,10 +210,10 @@ const audioElement = document.getElementById("introAudio")
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
 
-const crawlDuration = 110          // durée de l'animation du texte (inchangée)
+const crawlDuration = 110          // durée de l'animation du texte
 const fadeStart = 36                // début du fondu audio
 const fadeDuration = 15             // durée du fondu
-const buttonAppearTime = 44         // ⬅️ apparition du bouton à 46 secondes
+const buttonAppearTime = 46         // apparition du bouton à 46 secondes
 
 let started = false
 let fadeStarted = false
