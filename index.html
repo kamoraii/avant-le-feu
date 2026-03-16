@@ -15,17 +15,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 
 <style>
-/* Tes styles existants, inchangés */
+/* Tous tes styles, inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
-
 body{
 height:100vh;
 overflow:hidden;
 background:#000;
 font-family:'Marcellus',serif;
 }
-
-/* fond */
 .background{
 position:fixed;
 inset:0;
@@ -35,16 +32,12 @@ background-position:center;
 z-index:0;
 filter:grayscale(30%) contrast(1.1) brightness(0.9);
 }
-
-/* voile */
 .overlay{
 position:fixed;
 inset:0;
 background:radial-gradient(circle at 50% 30%,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.85) 100%);
 z-index:1;
 }
-
-/* grain */
 .grain{
 position:fixed;
 inset:0;
@@ -54,8 +47,6 @@ opacity:0.05;
 background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 background-size:150px;
 }
-
-/* bouton my world */
 .invitation{
 position:fixed;
 top:50%;
@@ -71,14 +62,11 @@ text-shadow:0 0 20px rgba(255,230,180,0.6);
 animation:pulse 3s infinite;
 z-index:20;
 }
-
 @keyframes pulse{
 0%{opacity:0.4;}
 50%{opacity:1;}
 100%{opacity:0.4;}
 }
-
-/* scène */
 .scene{
 position:fixed;
 inset:0;
@@ -88,7 +76,6 @@ overflow:hidden;
 opacity:0;
 transition:opacity .5s;
 z-index:5;
-
 mask-image: linear-gradient(
 to top,
 black 0%,
@@ -97,7 +84,6 @@ rgba(0,0,0,0.9) 75%,
 rgba(0,0,0,0.4) 85%,
 transparent 100%
 );
-
 -webkit-mask-image: linear-gradient(
 to top,
 black 0%,
@@ -106,30 +92,21 @@ rgba(0,0,0,0.9) 75%,
 rgba(0,0,0,0.4) 85%,
 transparent 100%
 );
-
 }
-
 .scene.active{
 opacity:1;
 }
-
-/* texte */
 .crawl-wrapper{
 position:absolute;
 top:100%;
 left:50%;
 width:130%;
-
 transform:translateX(-50%) rotateX(25deg) scaleY(0.85);
 transform-origin:50% 100%;
-
 text-align:center;
 line-height:1.6;
-
 animation:none;
-
 }
-
 @keyframes crawl{
 0%{
 top:100%;
@@ -140,79 +117,58 @@ top:-700%;
 transform:translateX(-50%) rotateX(28deg) scaleY(0.85);
 }
 }
-
 .crawl-wrapper p{
 font-size:clamp(1.8rem,4vw,3rem);
 letter-spacing:0.05em;
 margin-bottom:1.2em;
-
 color:#ffe9b8;
-
 text-shadow:
 0 0 40px rgba(255,220,160,0.7),
 0 0 80px rgba(0,0,0,0.9),
 0 10px 20px #000;
 }
-
 .crawl-wrapper p.final{
 font-size:clamp(2.5rem,6vw,4rem);
 letter-spacing:0.14em;
-
 color:#ffe9b8;
-
 text-shadow:
 0 0 100px rgba(255,230,170,1),
 0 0 180px rgba(255,210,130,0.8),
 0 0 280px rgba(255,190,80,0.6);
 }
-
-/* bouton go on */
 .btn-continue{
 position:fixed;
 top:45%;
 left:50%;
 transform:translate(-50%,-50%);
-
 font-family:'Playfair Display',serif;
-
 background:transparent;
 border:none;
-
 color:#ffe9b8;
-
 font-size:1.8rem;
 letter-spacing:0.3em;
-
 cursor:pointer;
-
 text-shadow:
 0 0 20px rgba(255,230,170,1),
 0 0 40px rgba(255,200,120,0.9),
 0 0 80px rgba(255,190,80,0.7);
-
 opacity:0;
-
 transition:opacity 2s;
-
 animation:shine 4s infinite;
 }
-
 @keyframes shine{
 0%{text-shadow:0 0 10px rgba(255,230,170,0.5);}
 50%{text-shadow:0 0 40px rgba(255,220,150,1),0 0 80px rgba(255,200,120,0.8);}
 100%{text-shadow:0 0 10px rgba(255,230,170,0.5);}
 }
-
 .btn-continue.visible{
 opacity:1;
 }
-
 audio{
 display:none;
 }
 </style>
 </head>
-
 <body>
 
 <div class="background"></div>
@@ -256,11 +212,11 @@ const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
 
 const crawlDuration = 110
-const fadeStart = 36           // seconde à laquelle le fondu commence
-const fadeDuration = 12         // durée du fondu (modifiable)
+const fadeStart = 36
+const fadeDuration = 12
 
 let started = false
-let fadeActive = false          // pour éviter de lancer plusieurs fois le fondu
+let fadeStarted = false
 
 function startExperience() {
   if (started) return
@@ -269,62 +225,68 @@ function startExperience() {
   invitation.style.display = "none"
   scene.classList.add("active")
 
-  // Réinitialise et lance l'animation du crawl
+  // Lance l'animation du texte
   crawl.style.animation = "none"
-  crawl.offsetHeight // force un reflow
+  crawl.offsetHeight // force le reflow
   crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
 
-  // Lance la musique (gère les erreurs)
-  audio.play().catch(e => console.log("Erreur de lecture audio :", e))
+  // Lance la musique
+  audio.play().catch(e => {
+    // En cas d'erreur (format non supporté, etc.), on le signale discrètement
+    console.log("Erreur de lecture audio :", e)
+  })
 
-  // Ajoute un écouteur pour surveiller l'avancement
+  // On surveille l'avancement pour déclencher le fondu exactement à 36 secondes
   audio.addEventListener('timeupdate', onTimeUpdate)
 
-  // Le bouton "go on?" apparaît après la fin du fondu
+  // Le bouton "go on?" apparaîtra après la fin du fondu (36+12 = 48s)
   setTimeout(() => {
     btn.classList.add("visible")
   }, (fadeStart + fadeDuration) * 1000)
 }
 
 function onTimeUpdate() {
-  // Si le fondu a déjà commencé ou si l'audio est en pause, on ne fait rien
-  if (fadeActive || audio.paused) return
+  // Évite de lancer plusieurs fois le fondu
+  if (fadeStarted) return
 
-  // Dès que la position de lecture atteint fadeStart, on déclenche le fondu
+  // Si on atteint ou dépasse 36 secondes, on déclenche le fondu
   if (audio.currentTime >= fadeStart) {
-    fadeActive = true
-    audio.removeEventListener('timeupdate', onTimeUpdate) // plus besoin de surveiller
+    fadeStarted = true
+    audio.removeEventListener('timeupdate', onTimeUpdate)
 
-    // Initialisation du fondu
-    const initialVolume = audio.volume // généralement 1
-    const steps = 50                   // nombre de paliers (plus = plus fluide)
-    const stepTime = (fadeDuration * 1000) / steps // intervalle entre chaque baisse
+    // Mémorise le volume de départ (généralement 1)
+    const initialVolume = audio.volume
+    const startTime = performance.now()
 
-    let currentStep = 0
-
-    const interval = setInterval(() => {
-      // Si l'audio est mis en pause ou se termine pendant le fondu, on arrête proprement
+    function fadeOut() {
+      // Si la musique a été mise en pause ou s'est arrêtée, on annule
       if (audio.paused || audio.ended) {
-        clearInterval(interval)
-        audio.volume = 1 // on rétablit le volume pour une prochaine lecture
+        audio.volume = 1 // on rétablit le volume
         return
       }
 
-      currentStep++
-      const progress = currentStep / steps
-      audio.volume = Math.max(0, 1 - progress)
+      const now = performance.now()
+      const elapsed = (now - startTime) / 1000 // temps écoulé depuis le début du fondu
+      const progress = Math.min(elapsed / fadeDuration, 1) // entre 0 et 1
 
-      // Fin du fondu
-      if (currentStep >= steps) {
-        clearInterval(interval)
-        audio.pause()      // arrête la lecture
-        audio.volume = 1   // remet le volume à 1 pour l'avenir
+      // Le volume diminue linéairement : 1 → 0
+      audio.volume = 1 - progress
+
+      if (progress < 1) {
+        // Continue le fondu
+        requestAnimationFrame(fadeOut)
+      } else {
+        // Fin du fondu : on arrête la musique et on remet le volume à 1 (pour une prochaine lecture)
+        audio.pause()
+        audio.volume = 1
       }
-    }, stepTime)
+    }
+
+    // Lance la première image du fondu
+    requestAnimationFrame(fadeOut)
   }
 }
 
-// Démarrage au clic (mobile et desktop)
 invitation.addEventListener("click", startExperience)
 invitation.addEventListener("touchstart", startExperience)
 </script>
