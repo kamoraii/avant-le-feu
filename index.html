@@ -207,9 +207,9 @@ const audioElement = document.getElementById("introAudio") // conservé mais non
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
 
-const crawlDuration = 110
-const fadeStart = 36           // seconde à laquelle le fondu commence
-const fadeDuration = 15         // durée du fondu (modifiable)
+const crawlDuration = 110          // durée de l'animation du texte
+const fadeStart = 36                // début du fondu audio (secondes)
+const fadeDuration = 15             // durée du fondu (de 36 à 51s)
 
 let started = false
 let fadeStarted = false
@@ -256,10 +256,10 @@ function startExperience() {
     })
     .catch(e => console.error('Erreur lecture audio:', e))
 
-  // Apparition du bouton "go on?" après (fadeStart + fadeDuration) secondes
+  // Apparition du bouton "go on?" à la fin de l'animation du texte (110s)
   setTimeout(() => {
     btn.classList.add("visible")
-  }, (fadeStart + fadeDuration) * 1000)
+  }, crawlDuration * 1000)
 }
 
 function checkTime(startTime) {
@@ -268,7 +268,7 @@ function checkTime(startTime) {
     
     const elapsed = audioContext.currentTime - startTime
     
-    // Déclenchement du fondu
+    // Déclenchement du fondu audio
     if (!fadeStarted && elapsed >= fadeStart) {
       fadeStarted = true
       clearInterval(checkInterval)
