@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
-/* Tes styles existants (inchangés) */
+/* Tous tes styles inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
 height:100vh;
@@ -163,7 +163,7 @@ opacity:1;
 audio{
 display:none;
 }
-/* Indicateur texte visible */
+/* Message de débogage (gardé pour confirmation) */
 #fadeMessage {
   position: fixed;
   top: 50%;
@@ -195,7 +195,8 @@ display:none;
 
 <button class="invitation" id="invitation">my world</button>
 
-<audio id="introAudio" preload="auto">
+<!-- On garde la balise audio mais on ne l'utilise plus directement -->
+<audio id="introAudio" preload="auto" style="display:none">
 <source src="musique_intro.mp3" type="audio/mpeg">
 </audio>
 
@@ -222,13 +223,13 @@ display:none;
 
 <button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
 
-<!-- Message de débogage visible -->
+<!-- Message de débogage -->
 <div id="fadeMessage">FONDU EN COURS...</div>
 
 <script>
 const invitation = document.getElementById("invitation")
 const scene = document.getElementById("scene")
-const audio = document.getElementById("introAudio")
+const audioElement = document.getElementById("introAudio") // on le garde pour le chargement
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
 const fadeMessage = document.getElementById("fadeMessage")
@@ -240,6 +241,24 @@ const fadeDuration = 12
 let started = false
 let fadeStarted = false
 
+// Variables pour l'API Web Audio
+let audioContext = null
+let gainNode = null
+let source = null
+let audioBuffer = null
+
+// Charge le fichier audio via fetch et AudioContext
+async function loadAudio() {
+  try {
+    const response = await fetch('musique_intro.mp3')
+    const arrayBuffer = await response.arrayBuffer()
+    audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    console.log('Audio chargé avec succès')
+  } catch (e) {
+    console.error('Erreur chargement audio:', e)
+  }
+}
+
 function startExperience() {
   if (started) return
   started = true
@@ -247,55 +266,86 @@ function startExperience() {
   invitation.style.display = "none"
   scene.classList.add("active")
 
+  // Animation du crawl
   crawl.style.animation = "none"
   crawl.offsetHeight
   crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
 
-  audio.play().catch(e => console.log("Erreur audio :", e))
+  // Initialisation de l'API Web Audio (doit être créé après interaction)
+  audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  
+  // Crée le noeud de gain (volume)
+  gainNode = audioContext.createGain()
+  gainNode.gain.value = 1 // volume max
+  gainNode.connect(audioContext.destination)
 
-  audio.addEventListener('timeupdate', onTimeUpdate)
+  // Charge le fichier audio
+  fetch('musique_intro.mp3')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+    .then(buffer => {
+      audioBuffer = buffer
+      
+      // Crée la source et la connecte
+      source = audioContext.createBufferSource()
+      source.buffer = audioBuffer
+      source.connect(gainNode)
+      
+      // Joue la musique
+      source.start(0)
+      
+      // Surveille l'avancement (on utilise setTimeout car on ne peut pas facilement suivre le temps avec Web Audio)
+      // On va plutôt utiliser un intervalle pour vérifier le temps écoulé
+      const startTime = audioContext.currentTime
+      checkTime(startTime)
+    })
+    .catch(e => console.error('Erreur lecture audio:', e))
 
+  // Le bouton "go on?" apparaît après la fin du fondu
   setTimeout(() => {
     btn.classList.add("visible")
   }, (fadeStart + fadeDuration) * 1000)
 }
 
-function onTimeUpdate() {
-  if (fadeStarted) return
-  if (audio.currentTime >= fadeStart) {
-    fadeStarted = true
-    audio.removeEventListener('timeupdate', onTimeUpdate)
-
-    // Affiche le message
-    fadeMessage.classList.add('visible')
-
-    const initialVolume = audio.volume
-    const startTime = performance.now()
-
-    function fadeOut() {
-      if (audio.paused || audio.ended) {
-        audio.volume = 1
-        fadeMessage.classList.remove('visible')
-        return
+function checkTime(startTime) {
+  const checkInterval = setInterval(() => {
+    if (!audioContext) return
+    
+    const elapsed = audioContext.currentTime - startTime
+    
+    // Déclenche le fondu si on atteint fadeStart
+    if (!fadeStarted && elapsed >= fadeStart) {
+      fadeStarted = true
+      clearInterval(checkInterval)
+      
+      // Affiche le message
+      fadeMessage.classList.add('visible')
+      
+      // Début du fondu
+      const fadeStartTime = audioContext.currentTime
+      const targetTime = fadeStartTime + fadeDuration
+      
+      function fadeLoop() {
+        const now = audioContext.currentTime
+        if (now >= targetTime) {
+          // Fin du fondu
+          gainNode.gain.value = 0
+          if (source) source.stop() // Arrête la source
+          fadeMessage.classList.remove('visible')
+          return
+        }
+        
+        // Calcule la valeur du gain (décroissance linéaire)
+        const progress = (now - fadeStartTime) / fadeDuration
+        gainNode.gain.value = 1 - progress
+        
+        // Continue la boucle
+        requestAnimationFrame(fadeLoop)
       }
-
-      const now = performance.now()
-      const elapsed = (now - startTime) / 1000
-      const progress = Math.min(elapsed / fadeDuration, 1)
-
-      audio.volume = 1 - progress
-
-      if (progress < 1) {
-        requestAnimationFrame(fadeOut)
-      } else {
-        audio.pause()
-        audio.volume = 1
-        fadeMessage.classList.remove('visible')
-      }
+      
+      requestAnimationFrame(fadeLoop)
     }
-
-    requestAnimationFrame(fadeOut)
-  }
+  }, 100) // Vérifie toutes les 100ms
 }
 
 invitation.addEventListener("click", startExperience)
