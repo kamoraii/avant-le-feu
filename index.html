@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 
 <style>
-
+/* Tes styles existants, inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
@@ -26,7 +26,6 @@ font-family:'Marcellus',serif;
 }
 
 /* fond */
-
 .background{
 position:fixed;
 inset:0;
@@ -38,7 +37,6 @@ filter:grayscale(30%) contrast(1.1) brightness(0.9);
 }
 
 /* voile */
-
 .overlay{
 position:fixed;
 inset:0;
@@ -47,7 +45,6 @@ z-index:1;
 }
 
 /* grain */
-
 .grain{
 position:fixed;
 inset:0;
@@ -59,7 +56,6 @@ background-size:150px;
 }
 
 /* bouton my world */
-
 .invitation{
 position:fixed;
 top:50%;
@@ -83,7 +79,6 @@ z-index:20;
 }
 
 /* scène */
-
 .scene{
 position:fixed;
 inset:0;
@@ -119,9 +114,7 @@ opacity:1;
 }
 
 /* texte */
-
 .crawl-wrapper{
-
 position:absolute;
 top:100%;
 left:50%;
@@ -138,21 +131,17 @@ animation:none;
 }
 
 @keyframes crawl{
-
 0%{
 top:100%;
 transform:translateX(-50%) rotateX(25deg) scaleY(0.85);
 }
-
 100%{
 top:-700%;
 transform:translateX(-50%) rotateX(28deg) scaleY(0.85);
 }
-
 }
 
 .crawl-wrapper p{
-
 font-size:clamp(1.8rem,4vw,3rem);
 letter-spacing:0.05em;
 margin-bottom:1.2em;
@@ -163,11 +152,9 @@ text-shadow:
 0 0 40px rgba(255,220,160,0.7),
 0 0 80px rgba(0,0,0,0.9),
 0 10px 20px #000;
-
 }
 
 .crawl-wrapper p.final{
-
 font-size:clamp(2.5rem,6vw,4rem);
 letter-spacing:0.14em;
 
@@ -177,13 +164,10 @@ text-shadow:
 0 0 100px rgba(255,230,170,1),
 0 0 180px rgba(255,210,130,0.8),
 0 0 280px rgba(255,190,80,0.6);
-
 }
 
 /* bouton go on */
-
 .btn-continue{
-
 position:fixed;
 top:45%;
 left:50%;
@@ -211,7 +195,6 @@ opacity:0;
 transition:opacity 2s;
 
 animation:shine 4s infinite;
-
 }
 
 @keyframes shine{
@@ -227,7 +210,6 @@ opacity:1;
 audio{
 display:none;
 }
-
 </style>
 </head>
 
@@ -244,40 +226,29 @@ display:none;
 </audio>
 
 <div class="scene" id="scene">
-
 <div class="crawl-wrapper" id="crawl">
-
 <p>Longtemps avant que le monde ne s'allume…</p>
 <p>nous étions déjà là.</p>
-
 <p>Les mains dans le froid,</p>
 <p>les genoux dans la poussière,</p>
 <p>portant un univers entier qui n'avait pas le droit de vaciller.</p>
-
 <p>Nous combattions sans relâche la chute.</p>
 <p>En silence.</p>
-
 <p>Laissant un peu de nous dans chaque recoin,</p>
 <p>pour que le rêve tienne debout.</p>
-
 <p>Ceux qui tombent</p>
 <p>ne tombent jamais seuls.</p>
-
 <p>Fiers d'un orgueil que rien n'efface.</p>
-
 <p>Et puis la rumeur commença à gronder</p>
 <p>jusqu'à ce que l'artiste franchisse</p>
 <p>le cercle incandescent.</p>
-
 <p class="final">Et le monde s'embrase.</p>
-
 </div>
 </div>
 
 <button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
 
 <script>
-
 const invitation = document.getElementById("invitation")
 const scene = document.getElementById("scene")
 const audio = document.getElementById("introAudio")
@@ -285,71 +256,77 @@ const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
 
 const crawlDuration = 110
-const fadeStart = 36           // début du fondu (secondes)
-const fadeDuration = 12         // durée du fondu (modifiable entre 10 et 15)
+const fadeStart = 36           // seconde à laquelle le fondu commence
+const fadeDuration = 12         // durée du fondu (modifiable)
 
 let started = false
-let fadeTimer = null           // pour pouvoir annuler si besoin
+let fadeActive = false          // pour éviter de lancer plusieurs fois le fondu
 
 function startExperience() {
   if (started) return
   started = true
 
   invitation.style.display = "none"
-
   scene.classList.add("active")
 
-  // Force le redémarrage de l'animation
+  // Réinitialise et lance l'animation du crawl
   crawl.style.animation = "none"
-  crawl.offsetHeight // reflow
+  crawl.offsetHeight // force un reflow
   crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
 
-  audio.play().catch(() => {})
+  // Lance la musique (gère les erreurs)
+  audio.play().catch(e => console.log("Erreur de lecture audio :", e))
 
-  // Planifier le début du fondu
-  setTimeout(() => {
-    // Si l'audio est déjà fini ou en pause, on ne fait rien
-    if (audio.paused || audio.ended) return
+  // Ajoute un écouteur pour surveiller l'avancement
+  audio.addEventListener('timeupdate', onTimeUpdate)
 
-    const initialVolume = audio.volume
-    const startTime = performance.now() // référence précise
-
-    function fadeOut(now) {
-      // Si l'audio a été mis en pause ou est fini pendant le fondu, on arrête
-      if (audio.paused || audio.ended) {
-        audio.volume = initialVolume // on remet le volume par défaut
-        return
-      }
-
-      const elapsed = (now - startTime) / 1000
-      const progress = Math.min(elapsed / fadeDuration, 1)
-      // volume décroît de 1 à 0
-      audio.volume = Math.max(0, 1 - progress)
-
-      if (progress < 1) {
-        // continue le fondu
-        requestAnimationFrame(fadeOut)
-      } else {
-        // fin du fondu : on met en pause et on réinitialise le volume pour une prochaine écoute
-        audio.pause()
-        audio.volume = 1
-      }
-    }
-
-    // Lance la première frame
-    requestAnimationFrame(fadeOut)
-  }, fadeStart * 1000)
-
-  // Apparition du bouton "go on?" après (fadeStart + fadeDuration) secondes
+  // Le bouton "go on?" apparaît après la fin du fondu
   setTimeout(() => {
     btn.classList.add("visible")
   }, (fadeStart + fadeDuration) * 1000)
 }
 
-// Évite les doubles déclenchements sur mobile
+function onTimeUpdate() {
+  // Si le fondu a déjà commencé ou si l'audio est en pause, on ne fait rien
+  if (fadeActive || audio.paused) return
+
+  // Dès que la position de lecture atteint fadeStart, on déclenche le fondu
+  if (audio.currentTime >= fadeStart) {
+    fadeActive = true
+    audio.removeEventListener('timeupdate', onTimeUpdate) // plus besoin de surveiller
+
+    // Initialisation du fondu
+    const initialVolume = audio.volume // généralement 1
+    const steps = 50                   // nombre de paliers (plus = plus fluide)
+    const stepTime = (fadeDuration * 1000) / steps // intervalle entre chaque baisse
+
+    let currentStep = 0
+
+    const interval = setInterval(() => {
+      // Si l'audio est mis en pause ou se termine pendant le fondu, on arrête proprement
+      if (audio.paused || audio.ended) {
+        clearInterval(interval)
+        audio.volume = 1 // on rétablit le volume pour une prochaine lecture
+        return
+      }
+
+      currentStep++
+      const progress = currentStep / steps
+      audio.volume = Math.max(0, 1 - progress)
+
+      // Fin du fondu
+      if (currentStep >= steps) {
+        clearInterval(interval)
+        audio.pause()      // arrête la lecture
+        audio.volume = 1   // remet le volume à 1 pour l'avenir
+      }
+    }, stepTime)
+  }
+}
+
+// Démarrage au clic (mobile et desktop)
 invitation.addEventListener("click", startExperience)
 invitation.addEventListener("touchstart", startExperience)
-
 </script>
 
 </body>
