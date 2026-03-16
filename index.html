@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
-/* Tes styles existants, inchangés */
+/* Tes styles existants (inchangés) */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
 height:100vh;
@@ -163,18 +163,27 @@ opacity:1;
 audio{
 display:none;
 }
-/* Indicateur de test (invisible au départ) */
-#fadeIndicator {
+/* Indicateur texte visible */
+#fadeMessage {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: red;
-  z-index: 100;
-  opacity: 0.8;
-  transition: background-color 0.3s;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  padding: 20px 40px;
+  border-radius: 20px;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  text-align: center;
+  border: 2px solid yellow;
+}
+#fadeMessage.visible {
+  opacity: 1;
 }
 </style>
 </head>
@@ -213,8 +222,8 @@ display:none;
 
 <button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
 
-<!-- Petit indicateur pour le debug -->
-<div id="fadeIndicator"></div>
+<!-- Message de débogage visible -->
+<div id="fadeMessage">FONDU EN COURS...</div>
 
 <script>
 const invitation = document.getElementById("invitation")
@@ -222,7 +231,7 @@ const scene = document.getElementById("scene")
 const audio = document.getElementById("introAudio")
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
-const indicator = document.getElementById("fadeIndicator") // le témoin
+const fadeMessage = document.getElementById("fadeMessage")
 
 const crawlDuration = 110
 const fadeStart = 36
@@ -257,8 +266,8 @@ function onTimeUpdate() {
     fadeStarted = true
     audio.removeEventListener('timeupdate', onTimeUpdate)
 
-    // Le témoin devient vert pour indiquer que le fondu commence
-    indicator.style.backgroundColor = "green"
+    // Affiche le message
+    fadeMessage.classList.add('visible')
 
     const initialVolume = audio.volume
     const startTime = performance.now()
@@ -266,7 +275,7 @@ function onTimeUpdate() {
     function fadeOut() {
       if (audio.paused || audio.ended) {
         audio.volume = 1
-        indicator.style.backgroundColor = "red" // retour au rouge si interrompu
+        fadeMessage.classList.remove('visible')
         return
       }
 
@@ -279,10 +288,9 @@ function onTimeUpdate() {
       if (progress < 1) {
         requestAnimationFrame(fadeOut)
       } else {
-        // Fin du fondu : on arrête la musique, on remet le volume, et on cache le témoin
         audio.pause()
         audio.volume = 1
-        indicator.style.opacity = "0" // le témoin disparaît
+        fadeMessage.classList.remove('visible')
       }
     }
 
