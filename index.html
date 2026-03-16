@@ -4,18 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dans l'ombre — my world</title>
-
 <link rel="icon" type="image/jpeg" href="icone.jpeg">
 <link rel="apple-touch-icon" href="icone.jpeg">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-
 <style>
-/* Tous tes styles, inchangés */
+/* Tes styles existants, inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
 height:100vh;
@@ -167,6 +163,19 @@ opacity:1;
 audio{
 display:none;
 }
+/* Indicateur de test (invisible au départ) */
+#fadeIndicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: red;
+  z-index: 100;
+  opacity: 0.8;
+  transition: background-color 0.3s;
+}
 </style>
 </head>
 <body>
@@ -204,12 +213,16 @@ display:none;
 
 <button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
 
+<!-- Petit indicateur pour le debug -->
+<div id="fadeIndicator"></div>
+
 <script>
 const invitation = document.getElementById("invitation")
 const scene = document.getElementById("scene")
 const audio = document.getElementById("introAudio")
 const crawl = document.getElementById("crawl")
 const btn = document.getElementById("btnContinue")
+const indicator = document.getElementById("fadeIndicator") // le témoin
 
 const crawlDuration = 110
 const fadeStart = 36
@@ -225,64 +238,54 @@ function startExperience() {
   invitation.style.display = "none"
   scene.classList.add("active")
 
-  // Lance l'animation du texte
   crawl.style.animation = "none"
-  crawl.offsetHeight // force le reflow
+  crawl.offsetHeight
   crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
 
-  // Lance la musique
-  audio.play().catch(e => {
-    // En cas d'erreur (format non supporté, etc.), on le signale discrètement
-    console.log("Erreur de lecture audio :", e)
-  })
+  audio.play().catch(e => console.log("Erreur audio :", e))
 
-  // On surveille l'avancement pour déclencher le fondu exactement à 36 secondes
   audio.addEventListener('timeupdate', onTimeUpdate)
 
-  // Le bouton "go on?" apparaîtra après la fin du fondu (36+12 = 48s)
   setTimeout(() => {
     btn.classList.add("visible")
   }, (fadeStart + fadeDuration) * 1000)
 }
 
 function onTimeUpdate() {
-  // Évite de lancer plusieurs fois le fondu
   if (fadeStarted) return
-
-  // Si on atteint ou dépasse 36 secondes, on déclenche le fondu
   if (audio.currentTime >= fadeStart) {
     fadeStarted = true
     audio.removeEventListener('timeupdate', onTimeUpdate)
 
-    // Mémorise le volume de départ (généralement 1)
+    // Le témoin devient vert pour indiquer que le fondu commence
+    indicator.style.backgroundColor = "green"
+
     const initialVolume = audio.volume
     const startTime = performance.now()
 
     function fadeOut() {
-      // Si la musique a été mise en pause ou s'est arrêtée, on annule
       if (audio.paused || audio.ended) {
-        audio.volume = 1 // on rétablit le volume
+        audio.volume = 1
+        indicator.style.backgroundColor = "red" // retour au rouge si interrompu
         return
       }
 
       const now = performance.now()
-      const elapsed = (now - startTime) / 1000 // temps écoulé depuis le début du fondu
-      const progress = Math.min(elapsed / fadeDuration, 1) // entre 0 et 1
+      const elapsed = (now - startTime) / 1000
+      const progress = Math.min(elapsed / fadeDuration, 1)
 
-      // Le volume diminue linéairement : 1 → 0
       audio.volume = 1 - progress
 
       if (progress < 1) {
-        // Continue le fondu
         requestAnimationFrame(fadeOut)
       } else {
-        // Fin du fondu : on arrête la musique et on remet le volume à 1 (pour une prochaine lecture)
+        // Fin du fondu : on arrête la musique, on remet le volume, et on cache le témoin
         audio.pause()
         audio.volume = 1
+        indicator.style.opacity = "0" // le témoin disparaît
       }
     }
 
-    // Lance la première image du fondu
     requestAnimationFrame(fadeOut)
   }
 }
