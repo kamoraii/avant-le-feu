@@ -6,37 +6,182 @@
 <title>Dans l'ombre — my world</title>
 <link rel="icon" type="image/jpeg" href="icone.jpeg">
 <link rel="apple-touch-icon" href="icone.jpeg">
+
+<!-- Polices Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
 <style>
+/* Tous tes styles de base inchangés */
 *{margin:0;padding:0;box-sizing:border-box;}
-body{height:100vh;overflow:hidden;background:#000;font-family:'Marcellus',serif;}
-.background{position:fixed;inset:0;background-image:url("fondecran.jpg");background-size:cover;background-position:center 82%;z-index:0;filter:grayscale(25%) contrast(1.1) brightness(0.9);animation:slowMove 90s linear infinite;}
-@keyframes slowMove{0%{transform:scale(1);}50%{transform:scale(1.06);}100%{transform:scale(1);}}
-.overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.75) 65%,rgba(0,0,0,0.95) 100%);z-index:1;}
-.grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:150px;}
-.invitation{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#ffe9b8;font-size:1.6rem;letter-spacing:0.35em;border:none;background:transparent;cursor:pointer;text-shadow:0 0 20px rgba(255,230,180,0.6);animation:pulse 3s infinite;z-index:20;}
-@keyframes pulse{0%{opacity:0.4;}50%{opacity:1;}100%{opacity:0.4;}}
-.scene{position:fixed;inset:0;perspective:420px;perspective-origin:50% 88%;overflow:hidden;opacity:0;transition:opacity .6s;z-index:5;mask-image:linear-gradient(to top,black 0%,black 55%,rgba(0,0,0,0.85) 70%,rgba(0,0,0,0.35) 85%,transparent 100%);-webkit-mask-image:linear-gradient(to top,black 0%,black 55%,rgba(0,0,0,0.85) 70%,rgba(0,0,0,0.35) 85%,transparent 100%);}
-.scene.active{opacity:1;}
-.crawl-wrapper{position:absolute;top:100%;left:50%;width:130%;transform:translateX(-50%) rotateX(32deg) scaleY(0.9);transform-origin:50% 100%;text-align:center;line-height:1.6;animation:none;}
-@keyframes crawl{0%{top:100%;transform:translateX(-50%) rotateX(32deg) scaleY(0.9);}100%{top:-700%;transform:translateX(-50%) rotateX(35deg) scaleY(0.9);}}
-.crawl-wrapper p{font-size:clamp(1.8rem,4vw,3rem);letter-spacing:0.05em;margin-bottom:1.2em;color:#ffe9b8;text-shadow:0 0 40px rgba(255,220,160,0.7),0 0 80px rgba(0,0,0,0.9),0 10px 20px #000;}
-.crawl-wrapper p.final{font-size:clamp(2.5rem,6vw,4rem);letter-spacing:0.14em;color:#ffe9b8;text-shadow:0 0 100px rgba(255,230,170,1),0 0 180px rgba(255,210,130,0.8),0 0 280px rgba(255,190,80,0.6);}
-.btn-continue{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);font-family:'Shadows Into Light',cursive;background:transparent;border:none;color:#ffe9b8;font-size:1.8rem;letter-spacing:0.3em;cursor:pointer;text-shadow:0 0 20px rgba(255,230,170,1),0 0 40px rgba(255,200,120,0.9),0 0 80px rgba(255,190,80,0.7);opacity:0;transition:opacity 4s;animation:shine 4s infinite;}
-@keyframes shine{0%{text-shadow:0 0 10px rgba(255,230,170,0.5);}50%{text-shadow:0 0 40px rgba(255,220,150,1),0 0 80px rgba(255,200,120,0.8);}100%{text-shadow:0 0 10px rgba(255,230,170,0.5);}}
-.btn-continue.visible{opacity:1;}
-audio{display:none;}
+body{
+height:100vh;
+overflow:hidden;
+background:#000;
+font-family:'Marcellus',serif;
+}
+.background{
+position:fixed;
+inset:0;
+background-image:url("fondecran.jpg");
+background-size:cover;
+background-position:center;
+z-index:0;
+filter:grayscale(30%) contrast(1.1) brightness(0.9);
+}
+.overlay{
+position:fixed;
+inset:0;
+background:radial-gradient(circle at 50% 30%,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.85) 100%);
+z-index:1;
+}
+.grain{
+position:fixed;
+inset:0;
+z-index:2;
+pointer-events:none;
+opacity:0.05;
+background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+background-size:150px;
+}
+.invitation{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+color:#ffe9b8;
+font-size:1.6rem;
+letter-spacing:0.35em;
+border:none;
+background:transparent;
+cursor:pointer;
+text-shadow:0 0 20px rgba(255,230,180,0.6);
+animation:pulse 3s infinite;
+z-index:20;
+}
+@keyframes pulse{
+0%{opacity:0.4;}
+50%{opacity:1;}
+100%{opacity:0.4;}
+}
+.scene{
+position:fixed;
+inset:0;
+perspective:380px;
+perspective-origin:50% 85%;
+overflow:hidden;
+opacity:0;
+transition:opacity .5s;
+z-index:5;
+mask-image: linear-gradient(
+to top,
+black 0%,
+black 60%,
+rgba(0,0,0,0.9) 75%,
+rgba(0,0,0,0.4) 85%,
+transparent 100%
+);
+-webkit-mask-image: linear-gradient(
+to top,
+black 0%,
+black 60%,
+rgba(0,0,0,0.9) 75%,
+rgba(0,0,0,0.4) 85%,
+transparent 100%
+);
+}
+.scene.active{
+opacity:1;
+}
+/* ----- MODIFICATION : effet plus plat façon Star Wars ----- */
+.crawl-wrapper{
+position:absolute;
+top:100%;
+left:50%;
+width:130%;
+transform:translateX(-50%) rotateX(15deg) translateZ(0); /* angle réduit, pas de scaleY */
+transform-origin:50% 100%;
+text-align:center;
+line-height:1.6;
+animation:none;
+}
+@keyframes crawl{
+0%{
+top:100%;
+transform:translateX(-50%) rotateX(15deg) translateZ(0);
+}
+100%{
+top:-700%;
+transform:translateX(-50%) rotateX(20deg) translateZ(-2000px); /* léger changement d'angle et éloignement */
+}
+}
+/* -------------------------------------------------------- */
+.crawl-wrapper p{
+font-size:clamp(1.8rem,4vw,3rem);
+letter-spacing:0.05em;
+margin-bottom:1.2em;
+color:#ffe9b8;
+text-shadow:
+0 0 40px rgba(255,220,160,0.7),
+0 0 80px rgba(0,0,0,0.9),
+0 10px 20px #000;
+}
+.crawl-wrapper p.final{
+font-size:clamp(2.5rem,6vw,4rem);
+letter-spacing:0.14em;
+color:#ffe9b8;
+text-shadow:
+0 0 100px rgba(255,230,170,1),
+0 0 180px rgba(255,210,130,0.8),
+0 0 280px rgba(255,190,80,0.6);
+}
+.btn-continue{
+position:fixed;
+top:45%;
+left:50%;
+transform:translate(-50%,-50%);
+font-family:'Shadows Into Light', cursive;
+background:transparent;
+border:none;
+color:#ffe9b8;
+font-size:1.8rem;
+letter-spacing:0.3em;
+cursor:pointer;
+text-shadow:
+0 0 20px rgba(255,230,170,1),
+0 0 40px rgba(255,200,120,0.9),
+0 0 80px rgba(255,190,80,0.7);
+opacity:0;
+transition:opacity 4s;
+animation:shine 4s infinite;
+}
+@keyframes shine{
+0%{text-shadow:0 0 10px rgba(255,230,170,0.5);}
+50%{text-shadow:0 0 40px rgba(255,220,150,1),0 0 80px rgba(255,200,120,0.8);}
+100%{text-shadow:0 0 10px rgba(255,230,170,0.5);}
+}
+.btn-continue.visible{
+opacity:1;
+}
+audio{
+display:none;
+}
 </style>
 </head>
 <body>
+
 <div class="background"></div>
 <div class="overlay"></div>
 <div class="grain"></div>
+
 <button class="invitation" id="invitation">my world</button>
-<audio id="introAudio" preload="auto"><source src="musique_intro.mp3" type="audio/mpeg"></audio>
+
+<audio id="introAudio" preload="auto" style="display:none">
+<source src="musique_intro.mp3" type="audio/mpeg">
+</audio>
+
 <div class="scene" id="scene">
 <div class="crawl-wrapper" id="crawl">
 <p>Longtemps avant que le monde ne s'allume…</p>
@@ -57,74 +202,106 @@ audio{display:none;}
 <p class="final">Et le monde s'embrase.</p>
 </div>
 </div>
-<button class="btn-continue" id="btnContinue" onclick="window.location.href='page2.html'">go on?</button>
+
+<button class="btn-continue" id="btnContinue" onclick="window.location.href='p1.html'">
+go on?
+</button>
+
 <script>
-const invitation=document.getElementById("invitation")
-const scene=document.getElementById("scene")
-const crawl=document.getElementById("crawl")
-const btn=document.getElementById("btnContinue")
-const crawlDuration=110
-const fadeStart=36
-const fadeDuration=15
-const buttonAppearTime=45
-let started=false
-let fadeStarted=false
-let audioContext=null
-let gainNode=null
-let source=null
-function startExperience(){
-if(started)return
-started=true
-invitation.style.display="none"
-scene.classList.add("active")
-crawl.style.animation="none"
-crawl.offsetHeight
-crawl.style.animation=`crawl ${crawlDuration}s linear -5s forwards`
-audioContext=new(window.AudioContext||window.webkitAudioContext)()
-gainNode=audioContext.createGain()
-gainNode.gain.value=1
-gainNode.connect(audioContext.destination)
-fetch('musique_intro.mp3')
-.then(response=>response.arrayBuffer())
-.then(arrayBuffer=>audioContext.decodeAudioData(arrayBuffer))
-.then(buffer=>{
-source=audioContext.createBufferSource()
-source.buffer=buffer
-source.connect(gainNode)
-source.start(0)
-const startTime=audioContext.currentTime
-checkTime(startTime)
-})
-.catch(e=>console.error('Erreur lecture audio:',e))
-setTimeout(()=>{btn.classList.add("visible")},buttonAppearTime*1000)
+const invitation = document.getElementById("invitation")
+const scene = document.getElementById("scene")
+const audioElement = document.getElementById("introAudio")
+const crawl = document.getElementById("crawl")
+const btn = document.getElementById("btnContinue")
+
+const crawlDuration = 110          // durée de l'animation du texte
+const fadeStart = 36                // début du fondu audio
+const fadeDuration = 15             // durée du fondu
+const buttonAppearTime = 45         // apparition du bouton à 45 secondes
+
+let started = false
+let fadeStarted = false
+
+// Variables pour l'API Web Audio
+let audioContext = null
+let gainNode = null
+let source = null
+
+function startExperience() {
+  if (started) return
+  started = true
+
+  invitation.style.display = "none"
+  scene.classList.add("active")
+
+  // Animation du texte
+  crawl.style.animation = "none"
+  crawl.offsetHeight
+  crawl.style.animation = `crawl ${crawlDuration}s linear -5s forwards`
+
+  // Initialisation de l'API Web Audio
+  audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  
+  gainNode = audioContext.createGain()
+  gainNode.gain.value = 1
+  gainNode.connect(audioContext.destination)
+
+  // Chargement et lecture du fichier audio
+  fetch('musique_intro.mp3')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+    .then(buffer => {
+      source = audioContext.createBufferSource()
+      source.buffer = buffer
+      source.connect(gainNode)
+      source.start(0)
+      
+      const startTime = audioContext.currentTime
+      checkTime(startTime)
+    })
+    .catch(e => console.error('Erreur lecture audio:', e))
+
+  // Apparition du bouton "go on?" après buttonAppearTime secondes
+  setTimeout(() => {
+    btn.classList.add("visible")
+  }, buttonAppearTime * 1000)
 }
-function checkTime(startTime){
-const checkInterval=setInterval(()=>{
-if(!audioContext)return
-const elapsed=audioContext.currentTime-startTime
-if(!fadeStarted&&elapsed>=fadeStart){
-fadeStarted=true
-clearInterval(checkInterval)
-const fadeStartTime=audioContext.currentTime
-const targetTime=fadeStartTime+fadeDuration
-function fadeLoop(){
-const now=audioContext.currentTime
-if(now>=targetTime){
-gainNode.gain.value=0
-if(source)source.stop()
-return
+
+function checkTime(startTime) {
+  const checkInterval = setInterval(() => {
+    if (!audioContext) return
+    
+    const elapsed = audioContext.currentTime - startTime
+    
+    if (!fadeStarted && elapsed >= fadeStart) {
+      fadeStarted = true
+      clearInterval(checkInterval)
+      
+      const fadeStartTime = audioContext.currentTime
+      const targetTime = fadeStartTime + fadeDuration
+      
+      function fadeLoop() {
+        const now = audioContext.currentTime
+        if (now >= targetTime) {
+          gainNode.gain.value = 0
+          if (source) source.stop()
+          return
+        }
+        
+        const progress = (now - fadeStartTime) / fadeDuration
+        gainNode.gain.value = 1 - progress
+        
+        requestAnimationFrame(fadeLoop)
+      }
+      
+      requestAnimationFrame(fadeLoop)
+    }
+  }, 100)
 }
-const progress=(now-fadeStartTime)/fadeDuration
-gainNode.gain.value=1-progress
-requestAnimationFrame(fadeLoop)
-}
-requestAnimationFrame(fadeLoop)
-}
-},100)
-}
-invitation.addEventListener("click",startExperience)
-invitation.addEventListener("touchstart",startExperience)
+
+invitation.addEventListener("click", startExperience)
+invitation.addEventListener("touchstart", startExperience)
 </script>
+
 </body>
 </html>
-:::
