@@ -17,6 +17,8 @@ font-family:'Marcellus',serif;
 overflow:hidden;
 }
 
+/* IMAGE */
+
 .image-container{
 position:fixed;
 inset:0;
@@ -32,39 +34,25 @@ max-height:100%;
 object-fit:contain;
 }
 
-/* NAV */
+/* NAV PROPRE */
 
 .nav{
 position:fixed;
 bottom:25px;
 left:0;
 width:100%;
-display:flex;
-justify-content:flex-end;
+
+display:grid;
+grid-template-columns: 1fr auto 1fr;
 align-items:center;
+
 padding:0 40px;
-}
-
-/* NEXT */
-
-.nav-btn{
-color:rgba(255,230,180,0.5);
-font-size:1rem;
-letter-spacing:0.3em;
-cursor:pointer;
-transition:0.3s;
-}
-
-.nav-btn:hover{
-color:#ffe9b8;
 }
 
 /* NUMÉROS */
 
 .nav-center{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
+justify-self:center;
 color:rgba(255,230,180,0.4);
 font-size:0.9rem;
 letter-spacing:0.4em;
@@ -79,6 +67,21 @@ transition:0.3s;
 color:#ffe9b8;
 }
 
+/* NEXT */
+
+.nav-btn{
+justify-self:end;
+color:rgba(255,230,180,0.5);
+font-size:1rem;
+letter-spacing:0.3em;
+cursor:pointer;
+transition:0.3s;
+}
+
+.nav-btn:hover{
+color:#ffe9b8;
+}
+
 </style>
 </head>
 
@@ -89,6 +92,8 @@ color:#ffe9b8;
 </div>
 
 <div class="nav">
+
+  <!-- espace gauche vide volontaire -->
 
   <!-- NUMÉROS -->
   <div class="nav-center">
