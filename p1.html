@@ -16,9 +16,9 @@ body {
   font-family: 'Marcellus', serif;
   overflow: hidden;
   height: 100vh;
-  color: #ffe9b8; /* or discret */
+  color: #ffe9b8;
 }
-/* Conteneur de l'image */
+/* Image plein écran */
 .image-container {
   position: fixed;
   inset: 0;
@@ -31,67 +31,66 @@ body {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8); /* léger halo pour profondeur */
 }
-/* Navigation */
+/* Navigation en haut */
 .nav {
   position: fixed;
-  bottom: 30px;
+  top: 20px;
   left: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
-  pointer-events: none; /* permet de cliquer à travers si besoin, mais on réactive les enfants */
+  padding: 0 30px;
+  pointer-events: none;
+  z-index: 10;
 }
 .nav > * {
   pointer-events: auto;
 }
-/* Numéros de page */
+/* Zone gauche vide pour équilibre (pas de back sur page 1) */
+.left-space {
+  width: 60px; /* même largeur que le bouton next pour équilibre */
+}
+/* Numéros de page centrés */
 .page-numbers {
-  flex: 1;
-  text-align: center;
   color: rgba(255, 233, 184, 0.3);
-  font-size: 1rem;
+  font-size: 0.9rem;
   letter-spacing: 0.3em;
-  transition: color 0.3s;
+  text-transform: uppercase;
 }
 .page-numbers span {
   cursor: pointer;
   transition: color 0.3s, text-shadow 0.3s;
-  padding: 0 4px;
+  padding: 0 6px;
 }
 .page-numbers span:hover {
   color: #ffe9b8;
-  text-shadow: 0 0 8px rgba(255, 233, 184, 0.6);
+  text-shadow: 0 0 8px rgba(255, 233, 184, 0.5);
 }
 /* Séparateur */
 .page-numbers span:not(:last-child)::after {
   content: "·";
-  margin: 0 8px;
+  margin-left: 8px;
   color: rgba(255, 233, 184, 0.2);
   pointer-events: none;
 }
 /* Bouton next */
 .next-btn {
   color: rgba(255, 233, 184, 0.4);
-  font-size: 1.1rem;
-  letter-spacing: 0.3em;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
   cursor: pointer;
   transition: color 0.3s, text-shadow 0.3s;
   text-decoration: none;
   background: transparent;
   border: none;
   padding: 5px 0;
+  text-transform: lowercase;
 }
 .next-btn:hover {
   color: #ffe9b8;
-  text-shadow: 0 0 8px rgba(255, 233, 184, 0.6);
-}
-/* Espace vide à gauche pour équilibre */
-.left-space {
-  flex: 1;
+  text-shadow: 0 0 8px rgba(255, 233, 184, 0.5);
 }
 </style>
 </head>
@@ -101,7 +100,7 @@ body {
 </div>
 
 <div class="nav">
-  <div class="left-space"></div> <!-- équilibre la grille -->
+  <div class="left-space"></div> <!-- pour équilibrer avec next -->
   <div class="page-numbers">
     <span onclick="window.location.href='p1.html'">1</span>
     <span onclick="window.location.href='p2.html'">2</span>
