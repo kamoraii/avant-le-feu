@@ -4,111 +4,111 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Page 1</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
-
 <style>
-
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-background:#000;
-font-family:'Marcellus',serif;
-overflow:hidden;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-/* IMAGE */
-
-.image-container{
-position:fixed;
-inset:0;
-display:flex;
-justify-content:center;
-align-items:center;
-background:#000;
+body {
+  background: #000;
+  font-family: 'Marcellus', serif;
+  overflow: hidden;
+  height: 100vh;
+  color: #ffe9b8; /* or discret */
 }
-
-.image-container img{
-max-width:100%;
-max-height:100%;
-object-fit:contain;
+/* Conteneur de l'image */
+.image-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
 }
-
-/* NAV PROPRE */
-
-.nav{
-position:fixed;
-bottom:25px;
-left:0;
-width:100%;
-
-display:grid;
-grid-template-columns: 1fr auto 1fr;
-align-items:center;
-
-padding:0 40px;
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8); /* léger halo pour profondeur */
 }
-
-/* NUMÉROS */
-
-.nav-center{
-justify-self:center;
-color:rgba(255,230,180,0.4);
-font-size:0.9rem;
-letter-spacing:0.4em;
+/* Navigation */
+.nav {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  pointer-events: none; /* permet de cliquer à travers si besoin, mais on réactive les enfants */
 }
-
-.nav-center span{
-cursor:pointer;
-transition:0.3s;
+.nav > * {
+  pointer-events: auto;
 }
-
-.nav-center span:hover{
-color:#ffe9b8;
+/* Numéros de page */
+.page-numbers {
+  flex: 1;
+  text-align: center;
+  color: rgba(255, 233, 184, 0.3);
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  transition: color 0.3s;
 }
-
-/* NEXT */
-
-.nav-btn{
-justify-self:end;
-color:rgba(255,230,180,0.5);
-font-size:1rem;
-letter-spacing:0.3em;
-cursor:pointer;
-transition:0.3s;
+.page-numbers span {
+  cursor: pointer;
+  transition: color 0.3s, text-shadow 0.3s;
+  padding: 0 4px;
 }
-
-.nav-btn:hover{
-color:#ffe9b8;
+.page-numbers span:hover {
+  color: #ffe9b8;
+  text-shadow: 0 0 8px rgba(255, 233, 184, 0.6);
 }
-
+/* Séparateur */
+.page-numbers span:not(:last-child)::after {
+  content: "·";
+  margin: 0 8px;
+  color: rgba(255, 233, 184, 0.2);
+  pointer-events: none;
+}
+/* Bouton next */
+.next-btn {
+  color: rgba(255, 233, 184, 0.4);
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: color 0.3s, text-shadow 0.3s;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 5px 0;
+}
+.next-btn:hover {
+  color: #ffe9b8;
+  text-shadow: 0 0 8px rgba(255, 233, 184, 0.6);
+}
+/* Espace vide à gauche pour équilibre */
+.left-space {
+  flex: 1;
+}
 </style>
 </head>
-
 <body>
-
 <div class="image-container">
   <img src="p1_photo1.jpg" alt="photo page 1">
 </div>
 
 <div class="nav">
-
-  <!-- espace gauche vide volontaire -->
-
-  <!-- NUMÉROS -->
-  <div class="nav-center">
-    <span onclick="window.location.href='p1.html'">1</span> ·
-    <span onclick="window.location.href='p2.html'">2</span> ·
-    <span onclick="window.location.href='p3.html'">3</span> ·
+  <div class="left-space"></div> <!-- équilibre la grille -->
+  <div class="page-numbers">
+    <span onclick="window.location.href='p1.html'">1</span>
+    <span onclick="window.location.href='p2.html'">2</span>
+    <span onclick="window.location.href='p3.html'">3</span>
     <span onclick="window.location.href='p4.html'">4</span>
   </div>
-
-  <!-- NEXT -->
-  <div class="nav-btn" onclick="window.location.href='p2.html'">
-    next
-  </div>
-
+  <div class="next-btn" onclick="window.location.href='p2.html'">next</div>
 </div>
-
 </body>
 </html>
